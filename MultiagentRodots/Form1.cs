@@ -16,10 +16,12 @@ namespace MultiagentRodots
         {
             InitializeComponent();
         }
+        
 
         public int leftIndent;
         public int topIndent;
         public int cellSize;
+        public Graphics g;
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -29,14 +31,13 @@ namespace MultiagentRodots
         private void button1_Click(object sender, EventArgs e)
         {
             pictureBox1.Image = new Bitmap(pictureBox1.Width, pictureBox1.Height);
-            Graphics g = Graphics.FromImage(pictureBox1.Image);
-            
+            g = Graphics.FromImage(pictureBox1.Image);
+
             //колонок больше чем рядов?
             bool colomsMoreRows = numericUpDown_coloms.Value >= numericUpDown_Rows.Value;
             cellSize = CellSize(colomsMoreRows);
 
             DrawSetka(cellSize, colomsMoreRows, g);
-            //Maze maze = new Maze(Form1);
         }
 
         private int CellSize(bool colomsMoreRows)
@@ -72,13 +73,33 @@ namespace MultiagentRodots
         
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
-            if(e.X > leftIndent && e.X < pictureBox1.Width - leftIndent)
+            int posX = PositionInMaze(e.X, leftIndent, numericUpDown_coloms.Value);
+            int posY = PositionInMaze(e.Y, topIndent, numericUpDown_Rows.Value);
+
+            if (posX != -1 && posY != -1)
             {
-                for(int i = 0; i < numericUpDown_coloms.Value; i++)
-                {
-                    //if(e.X > leftIndent+cell && e.X < )
-                }
+                g.FillRectangle(new SolidBrush(Color.Green), leftIndent + cellSize * posX, topIndent + cellSize * posY, cellSize, cellSize);
+                pictureBox1.Invalidate();
             }
+
         }
+
+
+        private int PositionInMaze(int pos, int indent, decimal value)
+        {
+            if (pos > indent && pos < pictureBox1.Width - indent)
+            {
+                for (int i = 0; i < value; i++)
+                    if (pos > (indent + cellSize * i) && pos < (indent + cellSize * (i+1)))
+                        return i;
+            }
+            return -1;
+        }
+
+        
+
+
+
+
     }
 }

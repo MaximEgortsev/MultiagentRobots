@@ -8,6 +8,11 @@ namespace MultiagentRodots
 {
     public class Maze 
     {
+        public Maze(decimal coloms, decimal rows)
+        {
+            walls = new bool[(int)coloms, (int)rows];
+        }
+        public bool[,] walls;
 
     }
 

@@ -44,7 +44,7 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.pictureBox1.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.pictureBox1.Location = new System.Drawing.Point(2, 10);
             this.pictureBox1.MaximumSize = new System.Drawing.Size(500, 500);
             this.pictureBox1.MinimumSize = new System.Drawing.Size(500, 500);
@@ -174,7 +174,6 @@
             this.MinimumSize = new System.Drawing.Size(600, 600);
             this.Name = "Form1";
             this.Text = "MultiagentRobots";
-            this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_coloms)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_Rows)).EndInit();

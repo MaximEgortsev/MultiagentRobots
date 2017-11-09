@@ -11,8 +11,21 @@ namespace MultiagentRodots
         public Maze(decimal coloms, decimal rows)
         {
             walls = new bool[(int)coloms, (int)rows];
+            status = new int[(int)coloms, (int)rows];
         }
         public bool[,] walls;
+        public int[,] status;
+
+        public enum Status
+        {
+            Unknown,
+            Wall,
+            Free,
+            Visited,
+        }
+
+        
+
 
     }
 

@@ -22,7 +22,6 @@ namespace MultiagentRodots
         public int cellSize;
         public int step = 0;
         public Graphics g;
-        public Point startPoint = new Point();
         Maze maze;
 
         private void button1_Click(object sender, EventArgs e)
@@ -43,7 +42,13 @@ namespace MultiagentRodots
             }
 
         }
-       
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (step == 1)
+                step = 2;
+        }
+
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
 
@@ -69,8 +74,9 @@ namespace MultiagentRodots
                     (posX == 0 || posY == 0 || posX == numericUpDown_coloms.Value - 1 || posY == numericUpDown_Rows.Value - 1))
                 {
                     PaintOverCell(new SolidBrush(Color.Green), posX, posY);
-                    startPoint = new Point(posX, posY);
                     step = 3;
+                    ColorizeMaze(posX, posY);
+                    CreateRobots(posX, posY);
                 }
             }
 
@@ -151,12 +157,23 @@ namespace MultiagentRodots
                 }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        //закрашиваем клетки которые нельзя посетить
+        private void ColorizeMaze(int posX, int posY)
         {
-            if (step == 1)
-            {
-                step = 2;
-            }
+            maze.FindBusyCell((int)numericUpDown_coloms.Value, (int)numericUpDown_Rows.Value, new Point(posX, posY));
+            for (int i = 0; i < (int)numericUpDown_coloms.Value; i++)
+                for (int j = 0; j < (int)numericUpDown_Rows.Value; j++)
+                {
+                    if (!maze.correctWalls[i, j])
+                        PaintOverCell(new SolidBrush(Color.Black), i, j);
+                }
+        }
+        
+        private void CreateRobots(int posX, int posY)
+        {
+            var rob1 = new Robot();
+            rob1.robPosition = new Point(posX, posY);
+            
         }
     }
 }

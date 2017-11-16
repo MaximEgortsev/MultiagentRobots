@@ -16,7 +16,7 @@ namespace MultiagentRodots
         {
             InitializeComponent();
         }        
-
+        
         public int leftIndent;
         public int topIndent;
         public int cellSize;
@@ -51,7 +51,6 @@ namespace MultiagentRodots
 
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
-
             //положение курсора относительно сетки
             int posX = PositionInMaze(e.X, leftIndent, numericUpDown_coloms.Value);
             int posY = PositionInMaze(e.Y, topIndent, numericUpDown_Rows.Value);
@@ -107,8 +106,6 @@ namespace MultiagentRodots
             }
 
             PaintConture();
-
-
 
         }
 
@@ -171,9 +168,7 @@ namespace MultiagentRodots
         
         private void CreateRobots(int posX, int posY)
         {
-            var rob1 = new Robot();
-            rob1.robPosition = new Point(posX, posY);
-            
+            var robot = new Robots(maze.correctWalls, new Point(posX, posY), (int)numericUpDown_Robots.Value);           
         }
     }
 }

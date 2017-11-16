@@ -12,7 +12,7 @@ namespace MultiagentRodots
         public Maze(decimal coloms, decimal rows)
         {
             walls = new bool[(int)coloms, (int)rows];
-            status = new int[(int)coloms, (int)rows];
+           // status = new int[(int)coloms, (int)rows];
         }
         /// <summary>
         /// if true - wall
@@ -22,15 +22,9 @@ namespace MultiagentRodots
         /// if true - robot can go
         /// </summary>
         public bool[,] correctWalls;
-        public int[,] status;
+        //public int[,] status;
 
-        public enum Status
-        {
-            Unknown,
-            Wall,
-            Free,
-            Visited,
-        }
+        
 
 
         //определяем все клетки которые робот не может посетить

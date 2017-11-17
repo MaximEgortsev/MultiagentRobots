@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 
-namespace MultiagentRodots
+namespace MultiagentRobots
 {
     public class Maze 
     {
@@ -51,11 +51,11 @@ namespace MultiagentRodots
                             //проверяет верхнюю, нижнюю правую и левую клетку относительно возможного расположения
                             if (i - 1 >= 0)
                                 robPosition[i - 1, j] = CheckCell(i - 1, j, robPosition[i - 1, j]);
-                            if (i + 1 <= widthMaze)
+                            if (i + 1 < widthMaze)
                                 robPosition[i + 1, j] = CheckCell(i + 1, j, robPosition[i + 1, j]);
                             if (j - 1 >= 0)
                                 robPosition[i, j - 1] = CheckCell(i, j - 1, robPosition[i, j - 1]);
-                            if (j + 1 <= heightMaze)
+                            if (j + 1 < heightMaze)
                                 robPosition[i, j + 1] = CheckCell(i, j + 1, robPosition[i, j + 1]);
                             robPosition[i, j] = false;
                             //переменная для того, чтобы смотреть только одно возможное положение за цикл

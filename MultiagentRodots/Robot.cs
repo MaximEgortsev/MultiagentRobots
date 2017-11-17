@@ -5,12 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 
-namespace MultiagentRodots
+namespace MultiagentRobots
 {
     public class Robots
     {
-        
-        public int robAmount = 0;      
+
+        public int robAmount = 0;
 
         public enum Status
         {
@@ -20,14 +20,14 @@ namespace MultiagentRodots
             Visited,
         }
 
-        public static Status[,] status = new Status[0,0];
+        public  Status[,] status = new Status[0, 0];
 
         public Robots(bool[,] wall, Point p, int v)
         {
             status = new Status[wall.GetLength(0), wall.GetLength(1)];
             status[p.X, p.Y] = Status.Free;
 
-            
+
             robAmount = v;
 
             var rob = new SingleRobot[robAmount];
@@ -45,43 +45,71 @@ namespace MultiagentRodots
 
             while (freeCoridors.Count() != 0)
             {
-                for(int i = 0; i < robAmount; i++)
+                var operation = OperationAmount(freeCoridors.Count, robAmount);
+
+
+
+
+                for (int i = 0; i < operation; i++)
                 {
-                    if(rob[i].robCondition == SingleRobot.Condition.Free)
+                    //if (rob[i].robCondition == SingleRobot.Condition.Free)
                     {
                         //добавить функцию вычисляющую ближайшую свободную клетку
-                        Point interesrPoint = freeCoridors[0];
-                        //вычисляем состояние соседних клеток
-                        if (interesrPoint.X - 1 >= 0)
-                            status[interesrPoint.X - 1, interesrPoint.Y] = SingleRobot.StatusCell(interesrPoint.X - 1, interesrPoint.Y, wall[interesrPoint.X - 1, interesrPoint.Y]);
-                        if (interesrPoint.X + 1 <= wall.GetLength(0))
-                            status[interesrPoint.X + 1, interesrPoint.Y] = SingleRobot.StatusCell(interesrPoint.X + 1, interesrPoint.Y, wall[interesrPoint.X + 1, interesrPoint.Y]);
-                        if (interesrPoint.Y - 1 >= 0)
-                            status[interesrPoint.X, interesrPoint.Y - 1] = SingleRobot.StatusCell(interesrPoint.X, interesrPoint.Y - 1, wall[interesrPoint.X, interesrPoint.Y - 1]);
-                        if (interesrPoint.X + 1 <= wall.GetLength(1))
-                            status[interesrPoint.X, interesrPoint.Y + 1] = SingleRobot.StatusCell(interesrPoint.X, interesrPoint.Y + 1, wall[interesrPoint.X, interesrPoint.Y + 1]);
-                        status[interesrPoint.X, interesrPoint.Y] = Status.Visited;
-                        freeCoridors.Remove(freeCoridors[0]);
+                        
+                        try
+                        {
+                            Point interesrPoint = freeCoridors[0];
+                            CheckCell(interesrPoint, wall, freeCoridors);
+                        }
+                        catch { break; }
                     }
                 }
+
+
+
+
+                
             }
 
 
-
-
-
-
         }
-        
+
+
+        public int OperationAmount(int len, int freeR)
+        {
+            if (freeR <= len)
+                return freeR;
+            else return len;
+        }
+
+        public void CheckCell(Point interesrPoint, bool[,] wall, List<Point> freeCoridors)
+        {
+            if (interesrPoint.X - 1 >= 0)
+                status[interesrPoint.X - 1, interesrPoint.Y] = SingleRobot.StatusCell(interesrPoint.X - 1, interesrPoint.Y, 
+                    wall[interesrPoint.X - 1, interesrPoint.Y], freeCoridors, status);
+            if (interesrPoint.X + 1 < wall.GetLength(0))
+                status[interesrPoint.X + 1, interesrPoint.Y] = SingleRobot.StatusCell(interesrPoint.X + 1, interesrPoint.Y, 
+                    wall[interesrPoint.X + 1, interesrPoint.Y], freeCoridors, status);
+            if (interesrPoint.Y - 1 >= 0)
+                status[interesrPoint.X, interesrPoint.Y - 1] = SingleRobot.StatusCell(interesrPoint.X, interesrPoint.Y - 1, 
+                    wall[interesrPoint.X, interesrPoint.Y - 1], freeCoridors, status);
+            if (interesrPoint.X + 1 < wall.GetLength(1))
+                status[interesrPoint.X, interesrPoint.Y + 1] = SingleRobot.StatusCell(interesrPoint.X, interesrPoint.Y + 1, 
+                    wall[interesrPoint.X, interesrPoint.Y + 1], freeCoridors, status);
+            status[interesrPoint.X, interesrPoint.Y] = Status.Visited;
+            freeCoridors.Remove(freeCoridors[0]);
+        }
     }
+
+
 
     public class SingleRobot
     {
-        public enum Condition
-        {
-            Free,
-            Busy
-        }
+        //public enum Condition
+        //{
+        //    Free,
+        //    Busy
+        //}
 
         public enum Direction
         {
@@ -92,33 +120,35 @@ namespace MultiagentRodots
             Right
         }
 
-        public Condition robCondition;
+        //public Condition robCondition;
         public Direction robDirection;
         public List<Point> robotWay = new List<Point>();
         public int openCoridors = 0;
         public Point robPosition = new Point();
-        //public bool[,] wall;
 
-        public SingleRobot(Point p/*, bool[,] w*/)
+        public SingleRobot(Point p)
         {
-            robCondition = Condition.Free;
+            //robCondition = Condition.Free;
             robDirection = Direction.None;
             robPosition = p;
-            //wall = w;
         }
 
-        public static Robots.Status StatusCell(int a, int b, bool w)
+        public static Robots.Status StatusCell(int a, int b, bool w, List<Point> freeCoridors, Robots.Status[,] status)
         {
-            if(Robots.status[a, b] == Robots.Status.Unknown)
+            if ( status[a, b] == Robots.Status.Unknown)
             {
                 if (w)
+                {
+                    freeCoridors.Add(new Point(a, b));
                     return Robots.Status.Free;
+                }
                 else
                     return Robots.Status.Wall;
             }
             else
-                return Robots.status[a, b];
+                return status[a, b];
         }
+
 
     }
 }

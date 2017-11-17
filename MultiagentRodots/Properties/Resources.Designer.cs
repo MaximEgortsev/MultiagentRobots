@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace MultiagentRodots.Properties
+namespace MultiagentRobots.Properties
 {
 
 

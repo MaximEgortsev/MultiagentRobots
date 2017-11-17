@@ -7,8 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Diagnostics;
+using System.Threading;
 
-namespace MultiagentRodots
+namespace MultiagentRobots
 {
     public partial class Form1 : Form
     {
@@ -23,6 +25,12 @@ namespace MultiagentRodots
         public int step = 0;
         public Graphics g;
         Maze maze;
+        public Point startpoint;
+
+
+
+        SingleAgent[] agent;
+
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -75,7 +83,7 @@ namespace MultiagentRodots
                     PaintOverCell(new SolidBrush(Color.Green), posX, posY);
                     step = 3;
                     ColorizeMaze(posX, posY);
-                    CreateRobots(posX, posY);
+                    CreateRobots(posX, posY);                   
                 }
             }
 
@@ -168,7 +176,69 @@ namespace MultiagentRodots
         
         private void CreateRobots(int posX, int posY)
         {
-            var robot = new Robots(maze.correctWalls, new Point(posX, posY), (int)numericUpDown_Robots.Value);           
+            var multAgent = new Agents(maze.correctWalls, new Point(posX, posY), (int)numericUpDown_Robots.Value);
+
+
+            agent = new SingleAgent[(int)numericUpDown_Robots.Value];
+            for (int i = 0; i < (int)numericUpDown_Robots.Value; i++)
+                agent[i] = new SingleAgent(new Point(posX, posY));
+
+            
+            
+            timer1.Enabled = true;
         }
+
+        private void Otladka()
+        {
+            
+            Agents.RoadCalc(maze.correctWalls, agent);
+            /////////otladka
+            for (int i = 0; i < (int)numericUpDown_coloms.Value; i++)
+                for (int j = 0; j < (int)numericUpDown_Rows.Value; j++)
+                {
+                    if (Agents.status[i, j] == Agents.Status.Visited)
+                        PaintOverCell(new SolidBrush(Color.Pink), i, j);
+                    if (Agents.status[i, j] == Agents.Status.Free)
+                        PaintOverCell(new SolidBrush(Color.Red), i, j);
+                    //if (Agents.status[i, j] == Agents.Status.Unknown)
+                    //    PaintOverCell(new SolidBrush(Color.Brown), i, j);
+                    if (Agents.status[i, j] == Agents.Status.Wall)
+                        PaintOverCell(new SolidBrush(Color.Yellow), i, j);
+
+                }
+        }
+       
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            Otladka();
+            DrawAgent();
+            
+        }
+
+
+
+        private void DrawAgent()
+        {
+            for (int i = 0; i < agent.Count(); i++)
+            {
+                var br = new SolidBrush(Color.FromArgb(i*10+50, i * 10 + 50, i * 10 + 50));
+                float corX = leftIndent + cellSize * agent[i].robPosition.X + cellSize / agent.Count() * i + 2;
+                float corY = topIndent + cellSize * agent[i].robPosition.Y + cellSize / agent.Count() * i + 2;
+                float wid = cellSize / agent.Count() - 2;
+                float heig = cellSize / agent.Count()- 2;
+                g.FillEllipse(br, corX, corY, wid, heig);
+            }
+            
+            pictureBox1.Invalidate();
+
+        }
+
+
+
+
+
+
+
+
     }
 }

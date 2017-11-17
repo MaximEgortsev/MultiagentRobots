@@ -1,10 +1,9 @@
-c:\users\егорцев\documents\visual studio 2015\Projects\MultiagentRodots\MultiagentRodots\bin\Debug\MultiagentRodots.exe.config
 C:\Users\Егорцев\Documents\Projects\MultiagentRodots\MultiagentRodots\bin\Debug\MultiagentRodots.exe.config
 C:\Users\Егорцев\Documents\Projects\MultiagentRodots\MultiagentRodots\bin\Debug\MultiagentRodots.exe
 C:\Users\Егорцев\Documents\Projects\MultiagentRodots\MultiagentRodots\bin\Debug\MultiagentRodots.pdb
-C:\Users\Егорцев\Documents\Projects\MultiagentRodots\MultiagentRodots\obj\Debug\MultiagentRodots.csprojResolveAssemblyReference.cache
+C:\Users\Егорцев\Documents\Projects\MultiagentRodots\MultiagentRodots\obj\Debug\MultiagentRobots.csprojResolveAssemblyReference.cache
+C:\Users\Егорцев\Documents\Projects\MultiagentRodots\MultiagentRodots\obj\Debug\MultiagentRobots.Form1.resources
 C:\Users\Егорцев\Documents\Projects\MultiagentRodots\MultiagentRodots\obj\Debug\MultiagentRodots.Properties.Resources.resources
-C:\Users\Егорцев\Documents\Projects\MultiagentRodots\MultiagentRodots\obj\Debug\MultiagentRodots.csproj.GenerateResource.Cache
+C:\Users\Егорцев\Documents\Projects\MultiagentRodots\MultiagentRodots\obj\Debug\MultiagentRobots.csproj.GenerateResource.Cache
 C:\Users\Егорцев\Documents\Projects\MultiagentRodots\MultiagentRodots\obj\Debug\MultiagentRodots.exe
 C:\Users\Егорцев\Documents\Projects\MultiagentRodots\MultiagentRodots\obj\Debug\MultiagentRodots.pdb
-C:\Users\Егорцев\Documents\Projects\MultiagentRodots\MultiagentRodots\obj\Debug\MultiagentRobots.Form1.resources

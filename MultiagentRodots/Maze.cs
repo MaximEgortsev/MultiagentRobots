@@ -12,7 +12,6 @@ namespace MultiagentRobots
         public Maze(decimal coloms, decimal rows)
         {
             walls = new bool[(int)coloms, (int)rows];
-           // status = new int[(int)coloms, (int)rows];
         }
         /// <summary>
         /// if true - wall
@@ -22,12 +21,14 @@ namespace MultiagentRobots
         /// if true - robot can go
         /// </summary>
         public bool[,] correctWalls;
-        //public int[,] status;
 
         
-
-
-        //определяем все клетки которые робот не может посетить
+        /// <summary>
+        /// определяем все клетки, которые робот не может посетить
+        /// </summary>
+        /// <param name="widthMaze"></param>
+        /// <param name="heightMaze"></param>
+        /// <param name="startPoint"></param>
         public void FindBusyCell(int widthMaze, int heightMaze, Point startPoint)
         {
             correctWalls = new bool[widthMaze, heightMaze];
@@ -71,8 +72,14 @@ namespace MultiagentRobots
             }
 
         }
-
-        //проверяет есть ли в соседней клетки препятствие
+  
+        /// <summary>
+        /// проверяет есть ли в соседней клетки препятствие
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="rb"></param>
+        /// <returns></returns>
         public bool CheckCell(int a, int b, bool rb)
         {
             //если нет стены и клетка еще не посещена 

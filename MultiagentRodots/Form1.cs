@@ -36,6 +36,9 @@ namespace MultiagentRobots
         {
             if (step == 0)
             {
+                numericUpDown_coloms.Enabled = false;
+                numericUpDown_Robots.Enabled = false;
+                numericUpDown_Rows.Enabled = false;
                 step = 1;
                 pictureBox1.Image = new Bitmap(pictureBox1.Width, pictureBox1.Height);
                 g = Graphics.FromImage(pictureBox1.Image);
@@ -46,6 +49,7 @@ namespace MultiagentRobots
 
                 cellSize = CellSize(colomsMoreRows);
                 DrawSetka(cellSize, colomsMoreRows, g);
+                button1.Enabled = false;
 
             }
 
@@ -54,7 +58,10 @@ namespace MultiagentRobots
         private void button2_Click(object sender, EventArgs e)
         {
             if (step == 1)
+            {
                 step = 2;
+                button2.Enabled = false;
+            }
         }
 
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
@@ -223,8 +230,6 @@ namespace MultiagentRobots
                        
         }
 
-
-
         private void DrawAgent()
         {
             for (int i = 0; i < agent.Count(); i++)
@@ -240,12 +245,6 @@ namespace MultiagentRobots
             pictureBox1.Invalidate();
 
         }
-
-
-
-
-
-
 
 
     }

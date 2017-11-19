@@ -9,18 +9,27 @@ namespace MultiagentRobots
 {
     public class Agents
     {
+        /// <summary>
+        /// количество роботов
+        /// </summary>
         public static int agentsAmount = 0;
+        /// <summary>
+        /// непосещенные коридоры
+        /// </summary>
         public static List<Point> freeCoridors = new List<Point>();
         
-
         public enum Status
         {
             Unknown,
             Wall,
             Free,
             Visited,
+            Goal
         }
 
+        /// <summary>
+        /// массив со стасусами каждой клетки в лабиринте
+        /// </summary>
         public static Status[,] status = new Status[0, 0];
 
         public Agents(bool[,] wall, Point p, int v)
@@ -42,40 +51,95 @@ namespace MultiagentRobots
 
         }
 
-
-        public static void RoadCalc(bool[,] w, SingleAgent[] agents)
+        /// <summary>
+        ///расчитывает один шаг для каждого робота
+        /// </summary>
+        /// <param name="w"> массив стен</param>
+        /// <param name="agents"> массив роботов</param>
+        /// <param name="freeRob">список свобоных роботов</param>
+        public static void RoadCalc(bool[,] w, SingleAgent[] agents, List<int> freeRob)
         {
+            //расчет количества роботов для выполнения данного шага (в зависимости от свободных клеток и количества роботов)
             var operation = Math.Min(agentsAmount, freeCoridors.Count);
-            Point coridor;
-
-            for(int i = 0; i < operation; i++)
+            //выполняется при первом заходе в лабиринт
+            if (freeCoridors[0] == agents[0].startRobPos)
             {
-                if (freeCoridors[0] == agents[0].robPosition)
-                    coridor = freeCoridors[0];
-                else
-                    coridor = SingleAgent.CalcNextRobPosition(agents[i]);
-                agents[i].robPosition = coridor;
-                SingleAgent.DeterminateStatusNextCells(coridor, w);
-                freeCoridors.Remove(coridor);
+                //Point coridor = freeCoridors[0];
+                //agents[0].startRobPos = coridor;
+                //SingleAgent.DeterminateStatusNextCells(coridor, w);
+                //freeCoridors.Remove(coridor);
+                //Point coridor = freeCoridors[0];
+                //присваиваем первому роботу начальную позицию - вход в лабиринт
+                agents[0].startRobPos = freeCoridors[0];
+                SingleAgent.DeterminateStatusNextCells(freeCoridors[0], w);
+                //удаляем посещенный коридор
+                freeCoridors.RemoveAt(0);
             }
+            //расчет шага после захода в лабиринт      
+            else 
+                for (int i = 0; i < operation; i++)
+                    RoadCalcInMaze(freeRob, agents, w);
+
         }
 
+        /// <summary>
+        /// расчет шага для каждого робота, если они уже зашли в лабиринт
+        /// </summary>
+        /// <param name="freeRob">список свободных роботов</param>
+        /// <param name="agents">список роботов</param>
+        /// <param name="w">массив стен</param>
+        public static void RoadCalcInMaze(List<int> freeRob, SingleAgent[] agents, bool[,] w)
+        {
+            //список с расстояниями от роботов до целевых точек
+            var lenghtRobWay = new List<int>();
+            //ищем кратчайшее растояие от каждого свободного робота до любой целевой точки
+            for (int j = 0; j < freeRob.Count(); j++)
+            {
+                agents[freeRob[j]].endRobPos = SingleAgent.CalcNextRobPosition(agents[freeRob[j]]);
+                lenghtRobWay.Add(agents[freeRob[j]].wayLenght);
+            }
+            //определяем индекс робота с минимальной ценой пути
+            var index = lenghtRobWay.IndexOf(lenghtRobWay.Min());
+            //перемещаем робота с следующую клетку
+            agents[freeRob[index]].startRobPos = agents[freeRob[index]].endRobPos;
+            //определяем статус соседних клеток
+            SingleAgent.DeterminateStatusNextCells(agents[freeRob[index]].startRobPos, w);
+            //удаляем посещенный коридор и робота выполнившего задачу из списков
+            freeCoridors.Remove(agents[freeRob[index]].startRobPos);
+            freeRob.RemoveAt(index);
+        }
         
-        
-
     }
 
 
 
     public class SingleAgent
     {
+        /// <summary>
+        /// записб пути пройденного робота во вермя прохождения лабиринта
+        /// </summary>
         public List<Point> robotWay = new List<Point>();
+        /// <summary>
+        /// количество открытых коридоров
+        /// </summary>
         public int openCoridors = 0;
-        public Point robPosition = new Point();
+        /// <summary>
+        /// позиция робота
+        /// </summary>
+        public Point startRobPos = new Point();
+        /// <summary>
+        /// позиция, в которую робот должен переместиться
+        /// </summary>
+        public Point endRobPos = new Point();
+        /// <summary>
+        /// длина пути до ближайшей целевой точки
+        /// </summary>
+        public int wayLenght = 0;
 
         public SingleAgent(Point p)
         {
-            robPosition = p;
+            startRobPos = p;
+            endRobPos = startRobPos;
         }
 
 
@@ -125,8 +189,9 @@ namespace MultiagentRobots
         public static Point CalcNextRobPosition(SingleAgent ag)
         {
             var weight = new int[Agents.status.GetLength(0), Agents.status.GetLength(1)];
-            weight[ag.robPosition.X, ag.robPosition.Y] = 1;
-            var startPoint = CalcAllPosibleMove(weight);
+            weight[ag.startRobPos.X, ag.startRobPos.Y] = 1;
+            var startPoint = CalcAllPosibleMove(weight, ag);
+            ag.wayLenght = weight[startPoint.X, startPoint.Y];
             return FindPosToMove(weight, startPoint);
         }
 
@@ -134,17 +199,17 @@ namespace MultiagentRobots
         /// вычисляем все возможные перемещения робота до целевой точки
         /// целеыая точка - ближайшая точка со статусом Free
         /// </summary>
-        public static Point CalcAllPosibleMove(int[,] w)
+        public static Point CalcAllPosibleMove(int[,] w, SingleAgent ag)
         {
-            int check = 1;
+            ag.wayLenght = 1;
             Point goalPoint;
-
+            //пока робот не достиг целевой точки 
             while(true)
             {
                 for(int i = 0; i < w.GetLength(0); i++)
                     for(int j = 0; j < w.GetLength(1); j++)
                     {
-                        if(w[i, j] == check)
+                        if(w[i, j] == ag.wayLenght)
                         {
                             if (i - 1 >= 0)
                             {
@@ -174,7 +239,7 @@ namespace MultiagentRobots
                             }
                         }
                     }
-                check++;
+                ag.wayLenght++;
             }
         }
 
@@ -230,11 +295,9 @@ namespace MultiagentRobots
                     continue;
                 }
             }
-            //return sPoint;
             return goalPoint;
         }
 
     }
-
 
 }

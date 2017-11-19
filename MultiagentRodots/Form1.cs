@@ -190,9 +190,13 @@ namespace MultiagentRobots
 
         private void Otladka()
         {
-            
-            Agents.RoadCalc(maze.correctWalls, agent);
-            /////////otladka
+
+            var freeRobots = new List<int>();
+            for (int i = 0; i < agent.Count(); i++)
+                freeRobots.Add(i);
+
+
+            Agents.RoadCalc(maze.correctWalls, agent, freeRobots);
             for (int i = 0; i < (int)numericUpDown_coloms.Value; i++)
                 for (int j = 0; j < (int)numericUpDown_Rows.Value; j++)
                 {
@@ -200,8 +204,6 @@ namespace MultiagentRobots
                         PaintOverCell(new SolidBrush(Color.Pink), i, j);
                     if (Agents.status[i, j] == Agents.Status.Free)
                         PaintOverCell(new SolidBrush(Color.Red), i, j);
-                    //if (Agents.status[i, j] == Agents.Status.Unknown)
-                    //    PaintOverCell(new SolidBrush(Color.Brown), i, j);
                     if (Agents.status[i, j] == Agents.Status.Wall)
                         PaintOverCell(new SolidBrush(Color.Yellow), i, j);
 
@@ -210,9 +212,15 @@ namespace MultiagentRobots
        
         private void timer1_Tick(object sender, EventArgs e)
         {
-            Otladka();
-            DrawAgent();
-            
+
+            if (Agents.freeCoridors.Count() != 0)
+            {
+                Otladka();
+                DrawAgent();
+            }
+            else
+                timer1.Enabled = false;
+                       
         }
 
 
@@ -222,8 +230,8 @@ namespace MultiagentRobots
             for (int i = 0; i < agent.Count(); i++)
             {
                 var br = new SolidBrush(Color.FromArgb(i*10+50, i * 10 + 50, i * 10 + 50));
-                float corX = leftIndent + cellSize * agent[i].robPosition.X + cellSize / agent.Count() * i + 2;
-                float corY = topIndent + cellSize * agent[i].robPosition.Y + cellSize / agent.Count() * i + 2;
+                float corX = leftIndent + cellSize * agent[i].startRobPos.X + cellSize / agent.Count() * i + 2;
+                float corY = topIndent + cellSize * agent[i].startRobPos.Y + cellSize / agent.Count() * i + 2;
                 float wid = cellSize / agent.Count() - 2;
                 float heig = cellSize / agent.Count()- 2;
                 g.FillEllipse(br, corX, corY, wid, heig);

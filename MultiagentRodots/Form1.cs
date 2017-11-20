@@ -19,19 +19,36 @@ namespace MultiagentRobots
             InitializeComponent();
         }        
         
+        /// <summary>
+        /// левы отступ в picBox
+        /// </summary>
         public int leftIndent;
+        /// <summary>
+        /// верхний отступ в picBox
+        /// </summary>
         public int topIndent;
+        /// <summary>
+        /// размер клетки
+        /// </summary>
         public int cellSize;
         public int step = 0;
         public Graphics g;
         Maze maze;
-        public Point startpoint;
+        ///// <summary>
+        ///// вход в лабиринт
+        ///// </summary>
+        //public Point startpoint;
 
 
 
         SingleAgent[] agent;
+        
 
-
+        /// <summary>
+        /// задаем размеры лабиринта, кол-во роботов
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
             if (step == 0)
@@ -50,11 +67,15 @@ namespace MultiagentRobots
                 cellSize = CellSize(colomsMoreRows);
                 DrawSetka(cellSize, colomsMoreRows, g);
                 button1.Enabled = false;
-
             }
 
         }
 
+        /// <summary>
+        /// после расстановки препятствий, далее выбор точки входа
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button2_Click(object sender, EventArgs e)
         {
             if (step == 1)
@@ -84,19 +105,27 @@ namespace MultiagentRobots
             }
             if (step == 2)
             {
+                //выбор входа в лабиринт, может быть только крайняя клетка
                 if (posX != -1 && posY != -1 &&
                     (posX == 0 || posY == 0 || posX == numericUpDown_coloms.Value - 1 || posY == numericUpDown_Rows.Value - 1))
                 {
                     PaintOverCell(new SolidBrush(Color.Green), posX, posY);
                     step = 3;
                     ColorizeMaze(posX, posY);
-                    CreateRobots(posX, posY);                   
+                    CreateRobots(posX, posY, (int)numericUpDown_Robots.Value);
+                    maze.startpoint = new Point(posX, posY);
+                    timer1.Enabled = true;
                 }
             }
 
         }
         
-        //отрисовка сетки
+        /// <summary>
+        /// отрисовка сетки
+        /// </summary>
+        /// <param name="cellSize"></param>
+        /// <param name="colomsMoreRows"></param>
+        /// <param name="g"></param>
         public void DrawSetka(int cellSize, bool colomsMoreRows, Graphics g)
         {
             //расчет отступов сетки от краев picBox
@@ -124,7 +153,11 @@ namespace MultiagentRobots
 
         }
 
-        //расчет размеров клетки
+        /// <summary>
+        ///расчет размеров клетки
+        /// </summary>
+        /// <param name="colomsMoreRows"></param>
+        /// <returns></returns>
         private int CellSize(bool colomsMoreRows)
         {
             if (colomsMoreRows)
@@ -133,7 +166,13 @@ namespace MultiagentRobots
                 return Convert.ToInt32(pictureBox1.Height / numericUpDown_Rows.Value);
         }
 
-        //определение позиции курсора относительно сетки
+        /// <summary>
+        /// определение позиции курсора относительно сетки
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="indent"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         private int PositionInMaze(int pos, int indent, decimal value)
         {
             //проверка что курсор внутри рабочей области
@@ -147,7 +186,12 @@ namespace MultiagentRobots
             return -1;
         }
 
-        //закрашиваем нужную кдлетку в нужный цвет
+        /// <summary>
+        /// закрашиваем нужную кдлетку в нужный цвет
+        /// </summary>
+        /// <param name="br">цвет</param>
+        /// <param name="posX"></param>
+        /// <param name="posY"></param>
         private void PaintOverCell(SolidBrush br, int posX, int posY)
         {
             g.FillRectangle(br, leftIndent + cellSize * posX + 2, topIndent + cellSize * posY +2, cellSize - 2, cellSize - 2);
@@ -155,7 +199,9 @@ namespace MultiagentRobots
             maze.walls[posX, posY] = !maze.walls[posX, posY];
         }
 
-        //закрашиваем контур
+        /// <summary>
+        /// закрашиваем контур
+        /// </summary>
         private void PaintConture()
         {
             for (int i = 0; i < numericUpDown_coloms.Value; i++)
@@ -169,7 +215,11 @@ namespace MultiagentRobots
                 }
         }
 
-        //закрашиваем клетки которые нельзя посетить
+        /// <summary>
+        /// закрашиваем клетки которые нельзя посетить
+        /// </summary>
+        /// <param name="posX"></param>
+        /// <param name="posY"></param>
         private void ColorizeMaze(int posX, int posY)
         {
             maze.FindBusyCell((int)numericUpDown_coloms.Value, (int)numericUpDown_Rows.Value, new Point(posX, posY));
@@ -181,29 +231,30 @@ namespace MultiagentRobots
                 }
         }
         
-        private void CreateRobots(int posX, int posY)
+        /// <summary>
+        /// создаем роботов
+        /// </summary>
+        /// <param name="posX">стартовая позиция х</param>
+        /// <param name="posY">стартовая позиция у</param>
+        /// <param name="count">кол-во роботов</param>
+        private void CreateRobots(int posX, int posY, int count)
         {
-            var multAgent = new Agents(maze.correctWalls, new Point(posX, posY), (int)numericUpDown_Robots.Value);
+            var multAgent = new Agents(maze.correctWalls, new Point(posX, posY), count);
 
-
-            agent = new SingleAgent[(int)numericUpDown_Robots.Value];
-            for (int i = 0; i < (int)numericUpDown_Robots.Value; i++)
+            agent = new SingleAgent[count];
+            for (int i = 0; i < count; i++)
                 agent[i] = new SingleAgent(new Point(posX, posY));
-
-            
-            
-            timer1.Enabled = true;
         }
 
-        private void Otladka()
+        /// <summary>
+        /// отрисовка передвижения роботов
+        /// розовый - свободные клетки
+        /// красные - посещенные клетки
+        /// желтые - обнаруженные стены
+        /// </summary>
+        private void VizualizationRobMove()
         {
-
-            var freeRobots = new List<int>();
-            for (int i = 0; i < agent.Count(); i++)
-                freeRobots.Add(i);
-
-
-            Agents.RoadCalc(maze.correctWalls, agent, freeRobots);
+            MoveOneStep();
             for (int i = 0; i < (int)numericUpDown_coloms.Value; i++)
                 for (int j = 0; j < (int)numericUpDown_Rows.Value; j++)
                 {
@@ -213,28 +264,51 @@ namespace MultiagentRobots
                         PaintOverCell(new SolidBrush(Color.Red), i, j);
                     if (Agents.status[i, j] == Agents.Status.Wall)
                         PaintOverCell(new SolidBrush(Color.Yellow), i, j);
-
                 }
+        }
+
+        /// <summary>
+        /// рассчет одного такта
+        /// </summary>
+        private void MoveOneStep()
+        {
+            agent[0].takt++;
+            //незадействованные роботы
+            var freeRobots = new List<int>();
+            for (int i = 0; i < agent.Count(); i++)
+                freeRobots.Add(i);
+
+            Agents.RoadCalc(maze.correctWalls, agent, freeRobots);
         }
        
         private void timer1_Tick(object sender, EventArgs e)
         {
-
+            var stat = new Statistic((int)numericUpDown_Robots.Maximum); 
             if (Agents.freeCoridors.Count() != 0)
             {
-                Otladka();
+                //agent[0].takt++;
+                VizualizationRobMove();
                 DrawAgent();
             }
             else
+            {
                 timer1.Enabled = false;
+                //Statistics();
+                stat.func1(agent);
+                CalcWayForAllVar(stat);
+
+            }
                        
         }
 
+        /// <summary>
+        /// отрисовка роботов
+        /// </summary>
         private void DrawAgent()
         {
             for (int i = 0; i < agent.Count(); i++)
             {
-                var br = new SolidBrush(Color.FromArgb(i*10+50, i * 10 + 50, i * 10 + 50));
+                var br = new SolidBrush(Color.FromArgb(i * 40 + 15, i * 40 + 15, i * 40 + 15));
                 float corX = leftIndent + cellSize * agent[i].startRobPos.X + cellSize / agent.Count() * i + 2;
                 float corY = topIndent + cellSize * agent[i].startRobPos.Y + cellSize / agent.Count() * i + 2;
                 float wid = cellSize / agent.Count() - 2;
@@ -245,6 +319,52 @@ namespace MultiagentRobots
             pictureBox1.Invalidate();
 
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void Statistics()
+        {
+            
+
+            string str = null;
+            for (int i = 0; i < agent.Count(); i++)
+            {
+                str += "Робот"+Convert.ToString(i)+" : " + Convert.ToString(agent[i].openCoridors) + "\n";
+            }
+                
+            Form Form2 = new Form();
+            Form2.Size = new Size(200, 200);
+            Form2.Visible = true;
+            RichTextBox rtb = new RichTextBox();
+            rtb.Text = "Открыто коридоров:\n";
+            rtb.Text += str;
+            //TextBox tb1 = new TextBox();
+            //tb1.Text = str;
+
+            Form2.Controls.Add(rtb);
+        }
+
+        /// <summary>
+        /// рассчет прохождения лабиринта роботами от 1 до n
+        /// без визуализации
+        /// </summary>
+        /// <param name="st"></param>
+        private void CalcWayForAllVar(Statistic st)
+        {
+            for (int i = 1; i <= (int)numericUpDown_Robots.Maximum; i++)
+            {
+                if (i == (int)numericUpDown_Robots.Value)
+                    continue;
+                CreateRobots(maze.startpoint.X, maze.startpoint.Y, i);
+
+                while (Agents.freeCoridors.Count() != 0)
+                    MoveOneStep();
+
+                st.func1(agent);
+            }
+        }
+
 
 
     }

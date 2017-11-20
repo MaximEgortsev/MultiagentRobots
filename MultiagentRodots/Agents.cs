@@ -71,9 +71,10 @@ namespace MultiagentRobots
                 //Point coridor = freeCoridors[0];
                 //присваиваем первому роботу начальную позицию - вход в лабиринт
                 agents[0].startRobPos = freeCoridors[0];
-                SingleAgent.DeterminateStatusNextCells(freeCoridors[0], w);
+                SingleAgent.DeterminateStatusNextCells(freeCoridors[0], w, agents[0]);
                 //удаляем посещенный коридор
                 freeCoridors.RemoveAt(0);
+                //agents[0].robotWay.Add(agents[0].startRobPos);
             }
             //расчет шага после захода в лабиринт      
             else 
@@ -103,10 +104,12 @@ namespace MultiagentRobots
             //перемещаем робота с следующую клетку
             agents[freeRob[index]].startRobPos = agents[freeRob[index]].endRobPos;
             //определяем статус соседних клеток
-            SingleAgent.DeterminateStatusNextCells(agents[freeRob[index]].startRobPos, w);
+            SingleAgent.DeterminateStatusNextCells(agents[freeRob[index]].startRobPos, w, agents[freeRob[index]]);
+            agents[freeRob[index]].robotWay.Add(agents[freeRob[index]].startRobPos);
             //удаляем посещенный коридор и робота выполнившего задачу из списков
             freeCoridors.Remove(agents[freeRob[index]].startRobPos);
             freeRob.RemoveAt(index);
+            
         }
         
     }
@@ -135,11 +138,16 @@ namespace MultiagentRobots
         /// длина пути до ближайшей целевой точки
         /// </summary>
         public int wayLenght = 0;
+        /// <summary>
+        /// количество тактов на прохождение лабиринта
+        /// </summary>
+        public int takt = 0;
 
         public SingleAgent(Point p)
         {
             startRobPos = p;
             endRobPos = startRobPos;
+            robotWay.Add(startRobPos);
         }
 
 
@@ -148,16 +156,16 @@ namespace MultiagentRobots
         /// </summary>
         /// <param name="coridor"> начальная точка</param>
         /// <param name="w">массив стен</param>
-        public static void DeterminateStatusNextCells(Point coridor, bool[,] w)
+        public static void DeterminateStatusNextCells(Point coridor, bool[,] w, SingleAgent ag)
         {
             if (coridor.X - 1 >= 0)
-                StatusCell(coridor.X - 1, coridor.Y, w[coridor.X - 1, coridor.Y]);
+                StatusCell(coridor.X - 1, coridor.Y, w[coridor.X - 1, coridor.Y], ag);
             if (coridor.X + 1 < w.GetLength(0))
-                StatusCell(coridor.X + 1, coridor.Y, w[coridor.X + 1, coridor.Y]);
+                StatusCell(coridor.X + 1, coridor.Y, w[coridor.X + 1, coridor.Y], ag);
             if (coridor.Y - 1 >= 0)
-                StatusCell(coridor.X, coridor.Y - 1, w[coridor.X, coridor.Y - 1]);
+                StatusCell(coridor.X, coridor.Y - 1, w[coridor.X, coridor.Y - 1], ag);
             if (coridor.Y + 1 < w.GetLength(1))
-                StatusCell(coridor.X, coridor.Y + 1, w[coridor.X, coridor.Y + 1]);
+                StatusCell(coridor.X, coridor.Y + 1, w[coridor.X, coridor.Y + 1], ag);
             Agents.status[coridor.X, coridor.Y] = Agents.Status.Visited;
         }
         
@@ -167,7 +175,7 @@ namespace MultiagentRobots
         /// <param name="a">координата клетки по х</param>
         /// <param name="b">координата клетки по у</param>
         /// <param name="w">массив стен</param>
-        public static void StatusCell(int a, int b, bool w)
+        public static void StatusCell(int a, int b, bool w, SingleAgent ag)
         {
             if (Agents.status[a, b] == Agents.Status.Unknown)
             {
@@ -175,6 +183,7 @@ namespace MultiagentRobots
                 {
                     Agents.freeCoridors.Add(new Point(a, b));
                     Agents.status[a, b] = Agents.Status.Free;
+                    ag.openCoridors++;
                 }
                 else
                     Agents.status[a, b] = Agents.Status.Wall;

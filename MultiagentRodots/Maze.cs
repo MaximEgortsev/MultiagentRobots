@@ -21,8 +21,11 @@ namespace MultiagentRobots
         /// if true - robot can go
         /// </summary>
         public bool[,] correctWalls;
+        /// <summary>
+        /// вход в лабиринт
+        /// </summary>
+        public Point startpoint;
 
-        
         /// <summary>
         /// определяем все клетки, которые робот не может посетить
         /// </summary>

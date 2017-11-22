@@ -7,3 +7,4 @@ C:\Users\Егорцев\Documents\Projects\MultiagentRodots\MultiagentRodots\obj
 C:\Users\Егорцев\Documents\Projects\MultiagentRodots\MultiagentRodots\obj\Debug\MultiagentRobots.csproj.GenerateResource.Cache
 C:\Users\Егорцев\Documents\Projects\MultiagentRodots\MultiagentRodots\obj\Debug\MultiagentRodots.exe
 C:\Users\Егорцев\Documents\Projects\MultiagentRodots\MultiagentRodots\obj\Debug\MultiagentRodots.pdb
+C:\Users\Егорцев\Documents\Projects\MultiagentRodots\MultiagentRodots\obj\Debug\MultiagentRobots.Form3.resources

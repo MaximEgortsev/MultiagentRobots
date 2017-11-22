@@ -33,14 +33,8 @@ namespace MultiagentRobots
         public int cellSize;
         public int step = 0;
         public Graphics g;
+
         Maze maze;
-        ///// <summary>
-        ///// вход в лабиринт
-        ///// </summary>
-        //public Point startpoint;
-
-
-
         SingleAgent[] agent;
         
 
@@ -293,10 +287,14 @@ namespace MultiagentRobots
             else
             {
                 timer1.Enabled = false;
-                //Statistics();
-                stat.func1(agent);
-                CalcWayForAllVar(stat);
 
+                stat.func1(agent);
+                
+                CalcWayForAllVar(stat);
+                Statistics(stat);
+                // var stWindow = new StatWindow(stat);
+                var Form3 = new Form3(stat);
+                Form3.Visible = true;
             }
                        
         }
@@ -323,26 +321,65 @@ namespace MultiagentRobots
         /// <summary>
         /// 
         /// </summary>
-        private void Statistics()
+        private void Statistics(Statistic st)
         {
-            
-
-            string str = null;
-            for (int i = 0; i < agent.Count(); i++)
-            {
-                str += "Робот"+Convert.ToString(i)+" : " + Convert.ToString(agent[i].openCoridors) + "\n";
-            }
-                
             Form Form2 = new Form();
-            Form2.Size = new Size(200, 200);
+            Form2.Size = new Size(500, 300);
             Form2.Visible = true;
-            RichTextBox rtb = new RichTextBox();
-            rtb.Text = "Открыто коридоров:\n";
-            rtb.Text += str;
-            //TextBox tb1 = new TextBox();
-            //tb1.Text = str;
 
-            Form2.Controls.Add(rtb);
+            PictureBox picBox = new PictureBox();
+            picBox.Dock = DockStyle.Fill;
+            picBox.BackColor = Color.White;
+
+            Form2.Controls.Add(picBox);
+
+            picBox.Image = new Bitmap(picBox.Width, picBox.Height);
+            var gr = Graphics.FromImage(picBox.Image);
+
+            //
+            string str1 = "tact";
+            string str2 = "robot";
+            Font drawFont = new Font("Arial", 16);
+            gr.DrawString(str1, drawFont, new SolidBrush(Color.Black), 0, 0);
+            gr.DrawString(str2, drawFont, new SolidBrush(Color.Black), 430, 240);
+
+            int lIndent = 50;
+            int tIndent = 30;
+
+            gr.DrawLine(new Pen(Color.Black), lIndent, tIndent, lIndent, picBox.Size.Height - tIndent);
+            gr.DrawLine(new Pen(Color.Black), lIndent, picBox.Size.Height - tIndent,
+                picBox.Size.Width - lIndent, picBox.Size.Height - tIndent);
+
+
+            int grafWidth = picBox.Size.Width - lIndent * 2;
+            int grafHeight = picBox.Size.Height - tIndent * 2;
+
+            var w = (int)grafWidth / (st.robAmount.Length + 1);
+            double max = st.steps.Max() + 10;
+            var t = (int)grafHeight / max;
+            //for (int i = 1; i <= st.robAmount.Length; i++) 
+            //    gr.DrawString(Convert.ToString(i), drawFont, new SolidBrush(Color.Black), lIndent + w * i, grafHeight + tIndent);
+
+            var widhtColom = 20;
+
+            for (int i = 0; i < st.robAmount.Length; i++)
+            {
+                gr.DrawString(Convert.ToString(i+1), drawFont, new SolidBrush(Color.Black), lIndent + w * (i+1), grafHeight + tIndent);
+                gr.DrawString(Convert.ToString(st.steps[i]), drawFont, new SolidBrush(Color.Black),
+                    lIndent + w * (i + 1), picBox.Height - tIndent - (int)(t * st.steps[i]) - 20);
+                gr.FillRectangle(new SolidBrush(Color.Red), lIndent + w * (i + 1), picBox.Height - tIndent - (int)(t * st.steps[i]), 
+                    widhtColom, (int)(t * st.steps[i]));
+            }
+
+            var mark = (max / 10 + 1) * 10;
+            gr.DrawString(Convert.ToString(mark), drawFont, new SolidBrush(Color.Black),
+                    10, picBox.Height - tIndent - (int)(t * mark));
+            gr.DrawString(Convert.ToString(0), drawFont, new SolidBrush(Color.Black),
+                    10, picBox.Height - tIndent);
+
+
+
+
         }
 
         /// <summary>

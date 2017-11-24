@@ -31,7 +31,11 @@ namespace MultiagentRobots
             robOpenCoridors = new int[amount, amount];
         }
         
-        public  void func1(SingleAgent[] ag)
+        /// <summary>
+        /// вводим открытые коидоры роботами и количество тактов для заданного количества роботов
+        /// </summary>
+        /// <param name="ag"></param>
+        public  void FillStatistic(SingleAgent[] ag)
         {
             for(int i = 0; i < ag.Count(); i++)
             {
@@ -39,7 +43,6 @@ namespace MultiagentRobots
             }
             steps[ag.Count() - 1] = ag[0].takt;
         }
-
 
     }
 }

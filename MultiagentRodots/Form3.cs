@@ -18,18 +18,21 @@ namespace MultiagentRobots
             InitializeComponent();
             statistic = st;
             richTextBox1.Text = CreateText((int)numericUpDown1.Value);
-            CreateDiagram((int)numericUpDown1.Value);
+            CreateCircleDiagram((int)numericUpDown1.Value);
+            CreateColumDiagramm();
         }
-
-         
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
             richTextBox1.Text = CreateText((int)numericUpDown1.Value);
-            CreateDiagram((int)numericUpDown1.Value);
+            CreateCircleDiagram((int)numericUpDown1.Value);
         }
 
-
+        /// <summary>
+        /// вывод количества открыты коридоров на экран
+        /// </summary>
+        /// <param name="val">количество роботов</param>
+        /// <returns></returns>
         private string CreateText(int val)
         {
             string str = "В результате прохождения лабиринта, роботы открыли следующее количество коридоров:\n";
@@ -40,7 +43,11 @@ namespace MultiagentRobots
             return str;
         }
 
-        private void CreateDiagram(int val)
+        /// <summary>
+        /// оздает круговую диаграмму отображающую количество открытых коридоров каждым роботом
+        /// </summary>
+        /// <param name="val"></param>
+        private void CreateCircleDiagram(int val)
         {
             pictureBox1.Image = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             var g = Graphics.FromImage(pictureBox1.Image);
@@ -61,6 +68,48 @@ namespace MultiagentRobots
                 var add = m * statistic.robOpenCoridors[val-1, i];
                 g.FillPie(br[i], rect, lastPos, add);
                 lastPos += add;
+            }
+        }
+
+        /// <summary>
+        /// создаем столбчатую диаграмму
+        /// </summary>
+        private void CreateColumDiagramm()
+        {
+            pictureBox2.Image = new Bitmap(pictureBox2.Width, pictureBox2.Height);
+            var gr = Graphics.FromImage(pictureBox2.Image);
+            //левый отступ
+            int lIndent = 50;
+            //отступ сверху
+            int tIndent = 30;
+            Font drawFont = new Font("Arial", 12);
+            //надписи такт и робот
+            gr.DrawString("tact", drawFont, new SolidBrush(Color.Black), 0, 0);
+            gr.DrawString("robot", drawFont, new SolidBrush(Color.Black), pictureBox2.Width - lIndent, pictureBox2.Height - tIndent);
+            //линии для столбчатой диаграммы
+            gr.DrawLine(new Pen(Color.Black), lIndent, tIndent, lIndent, pictureBox2.Size.Height - tIndent);
+            gr.DrawLine(new Pen(Color.Black), lIndent, pictureBox2.Size.Height - tIndent,
+                pictureBox2.Size.Width - lIndent, pictureBox2.Size.Height - tIndent);
+            //количество роботов
+            gr.DrawString(Convert.ToString(0), drawFont, new SolidBrush(Color.Black),
+                    10, pictureBox2.Height - tIndent);
+
+            int grafWidth = pictureBox2.Size.Width - lIndent * 2;
+            int grafHeight = pictureBox2.Size.Height - tIndent * 2;
+
+            var w = (int)grafWidth / (statistic.robAmount.Length + 1);
+            double max = statistic.steps.Max() + 10;
+            var t = (int)grafHeight / max;
+
+            var widhtColom = 20;
+            //отображаем количество тактов для каждого количества роботов
+            for (int i = 0; i < statistic.robAmount.Length; i++)
+            {
+                gr.DrawString(Convert.ToString(i + 1), drawFont, new SolidBrush(Color.Black), lIndent + w * (i + 1), grafHeight + tIndent);
+                gr.DrawString(Convert.ToString(statistic.steps[i]), drawFont, new SolidBrush(Color.Black),
+                    lIndent + w * (i + 1), pictureBox2.Height - tIndent - (int)(t * statistic.steps[i]) - 20);
+                gr.FillRectangle(new SolidBrush(Color.Red), lIndent + w * (i + 1), pictureBox2.Height - tIndent - (int)(t * statistic.steps[i]),
+                    widhtColom, (int)(t * statistic.steps[i]));
             }
         }
 

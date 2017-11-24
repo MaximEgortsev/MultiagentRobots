@@ -17,6 +17,7 @@ namespace MultiagentRobots
         public Form1()
         {
             InitializeComponent();
+            textBox1.Text = "Введите размеры лабиринта и количество роботов, далее нажмите кнопку create";
         }        
         
         /// <summary>
@@ -47,6 +48,7 @@ namespace MultiagentRobots
         {
             if (step == 0)
             {
+                textBox1.Text = "Укажите препятствия в лабиринте, далее нажмите кнопку start";
                 numericUpDown_coloms.Enabled = false;
                 numericUpDown_Robots.Enabled = false;
                 numericUpDown_Rows.Enabled = false;
@@ -74,6 +76,7 @@ namespace MultiagentRobots
         {
             if (step == 1)
             {
+                textBox1.Text = "Укажите вход в лабиринт";
                 step = 2;
                 button2.Enabled = false;
             }
@@ -108,6 +111,7 @@ namespace MultiagentRobots
                     ColorizeMaze(posX, posY);
                     CreateRobots(posX, posY, (int)numericUpDown_Robots.Value);
                     maze.startpoint = new Point(posX, posY);
+                    textBox1.Text = "";
                     timer1.Enabled = true;
                 }
             }
@@ -144,7 +148,6 @@ namespace MultiagentRobots
             }
 
             PaintConture();
-
         }
 
         /// <summary>
@@ -277,10 +280,9 @@ namespace MultiagentRobots
        
         private void timer1_Tick(object sender, EventArgs e)
         {
-            var stat = new Statistic((int)numericUpDown_Robots.Maximum); 
+            //рассчитываем и торисовываем путь пока есть непосещенные коридоры
             if (Agents.freeCoridors.Count() != 0)
             {
-                //agent[0].takt++;
                 VizualizationRobMove();
                 DrawAgent();
             }
@@ -288,15 +290,13 @@ namespace MultiagentRobots
             {
                 timer1.Enabled = false;
 
-                stat.func1(agent);
-                
+                var stat = new Statistic((int)numericUpDown_Robots.Maximum);
+                stat.FillStatistic(agent);               
                 CalcWayForAllVar(stat);
-                Statistics(stat);
-                // var stWindow = new StatWindow(stat);
+                //выводим статистику
                 var Form3 = new Form3(stat);
                 Form3.Visible = true;
-            }
-                       
+            }                     
         }
 
         /// <summary>
@@ -317,71 +317,7 @@ namespace MultiagentRobots
             pictureBox1.Invalidate();
 
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        private void Statistics(Statistic st)
-        {
-            Form Form2 = new Form();
-            Form2.Size = new Size(500, 300);
-            Form2.Visible = true;
-
-            PictureBox picBox = new PictureBox();
-            picBox.Dock = DockStyle.Fill;
-            picBox.BackColor = Color.White;
-
-            Form2.Controls.Add(picBox);
-
-            picBox.Image = new Bitmap(picBox.Width, picBox.Height);
-            var gr = Graphics.FromImage(picBox.Image);
-
-            //
-            string str1 = "tact";
-            string str2 = "robot";
-            Font drawFont = new Font("Arial", 16);
-            gr.DrawString(str1, drawFont, new SolidBrush(Color.Black), 0, 0);
-            gr.DrawString(str2, drawFont, new SolidBrush(Color.Black), 430, 240);
-
-            int lIndent = 50;
-            int tIndent = 30;
-
-            gr.DrawLine(new Pen(Color.Black), lIndent, tIndent, lIndent, picBox.Size.Height - tIndent);
-            gr.DrawLine(new Pen(Color.Black), lIndent, picBox.Size.Height - tIndent,
-                picBox.Size.Width - lIndent, picBox.Size.Height - tIndent);
-
-
-            int grafWidth = picBox.Size.Width - lIndent * 2;
-            int grafHeight = picBox.Size.Height - tIndent * 2;
-
-            var w = (int)grafWidth / (st.robAmount.Length + 1);
-            double max = st.steps.Max() + 10;
-            var t = (int)grafHeight / max;
-            //for (int i = 1; i <= st.robAmount.Length; i++) 
-            //    gr.DrawString(Convert.ToString(i), drawFont, new SolidBrush(Color.Black), lIndent + w * i, grafHeight + tIndent);
-
-            var widhtColom = 20;
-
-            for (int i = 0; i < st.robAmount.Length; i++)
-            {
-                gr.DrawString(Convert.ToString(i+1), drawFont, new SolidBrush(Color.Black), lIndent + w * (i+1), grafHeight + tIndent);
-                gr.DrawString(Convert.ToString(st.steps[i]), drawFont, new SolidBrush(Color.Black),
-                    lIndent + w * (i + 1), picBox.Height - tIndent - (int)(t * st.steps[i]) - 20);
-                gr.FillRectangle(new SolidBrush(Color.Red), lIndent + w * (i + 1), picBox.Height - tIndent - (int)(t * st.steps[i]), 
-                    widhtColom, (int)(t * st.steps[i]));
-            }
-
-            var mark = (max / 10 + 1) * 10;
-            gr.DrawString(Convert.ToString(mark), drawFont, new SolidBrush(Color.Black),
-                    10, picBox.Height - tIndent - (int)(t * mark));
-            gr.DrawString(Convert.ToString(0), drawFont, new SolidBrush(Color.Black),
-                    10, picBox.Height - tIndent);
-
-
-
-
-        }
-
+       
         /// <summary>
         /// рассчет прохождения лабиринта роботами от 1 до n
         /// без визуализации
@@ -391,6 +327,7 @@ namespace MultiagentRobots
         {
             for (int i = 1; i <= (int)numericUpDown_Robots.Maximum; i++)
             {
+                //пропускем робота для которого уже рассчитали лабиринт
                 if (i == (int)numericUpDown_Robots.Value)
                     continue;
                 CreateRobots(maze.startpoint.X, maze.startpoint.Y, i);
@@ -398,11 +335,18 @@ namespace MultiagentRobots
                 while (Agents.freeCoridors.Count() != 0)
                     MoveOneStep();
 
-                st.func1(agent);
+                st.FillStatistic(agent);
             }
         }
 
-
-
+        /// <summary>
+        /// запрет ввода символов с клавиатуры
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            e.Handled = true;
+        }
     }
 }

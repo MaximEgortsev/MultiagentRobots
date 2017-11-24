@@ -23,8 +23,7 @@ namespace MultiagentRobots
             Unknown,
             Wall,
             Free,
-            Visited,
-            Goal
+            Visited
         }
 
         /// <summary>
@@ -35,20 +34,9 @@ namespace MultiagentRobots
         public Agents(bool[,] wall, Point p, int v)
         {
             status = new Status[wall.GetLength(0), wall.GetLength(1)];
-            status[p.X, p.Y] = Status.Free;
-            
-            agentsAmount = v;
-
-            //var agent = new SingleAgent[agentsAmount];
-            //for (int i = 0; i < agentsAmount; i++)
-            //    agent[i] = new SingleAgent(p);
-            
-            freeCoridors.Add(p);
-
-
-            
-
-
+            status[p.X, p.Y] = Status.Free;    
+            agentsAmount = v;     
+            freeCoridors.Add(p);           
         }
 
         /// <summary>
@@ -64,17 +52,11 @@ namespace MultiagentRobots
             //выполняется при первом заходе в лабиринт
             if (freeCoridors[0] == agents[0].startRobPos)
             {
-                //Point coridor = freeCoridors[0];
-                //agents[0].startRobPos = coridor;
-                //SingleAgent.DeterminateStatusNextCells(coridor, w);
-                //freeCoridors.Remove(coridor);
-                //Point coridor = freeCoridors[0];
                 //присваиваем первому роботу начальную позицию - вход в лабиринт
                 agents[0].startRobPos = freeCoridors[0];
                 SingleAgent.DeterminateStatusNextCells(freeCoridors[0], w, agents[0]);
                 //удаляем посещенный коридор
                 freeCoridors.RemoveAt(0);
-                //agents[0].robotWay.Add(agents[0].startRobPos);
             }
             //расчет шага после захода в лабиринт      
             else 
